@@ -115,9 +115,24 @@
       <section class="posts-section">
         <div class="container">
           <h1 class="with-underline text-center">Latest posts</h1>
-
+          <!-- search  -->
+          <div class="input-group flex-nowrap mb-4">
+            <span class="input-group-text" id="addon-wrapping">Search</span>
+            <input
+              id="searchInput"
+              type="text"
+              class="form-control"
+              placeholder="Username"
+              aria-label="Username"
+              aria-describedby="addon-wrapping"
+            />
+          </div>
+          <!-- search  -->
           <!-- Posts list -->
-          <ul id="postList" class="row posts-list justify-content-center"></ul>
+          <ul
+            id="postList"
+            class="row posts-list justify-content-center ps-0"
+          ></ul>
 
           <!-- Posts pagination -->
           <nav class="posts-nav" aria-label="Posts navigation">
