@@ -1,8 +1,8 @@
-import axiosClient from "./axiosClient";
+import axiosClient from './axiosClient';
 
 export const postApi = {
   getAll(params) {
-    const url = "/posts";
+    const url = '/posts';
     return axiosClient.get(url, { params });
   },
 
@@ -12,7 +12,7 @@ export const postApi = {
   },
 
   add(data) {
-    const url = "/posts";
+    const url = '/posts';
     return axiosClient.post(url, data);
   },
 
