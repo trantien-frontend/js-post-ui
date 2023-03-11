@@ -37,7 +37,7 @@ function createPostItemInPostList(postItem) {
      * case 3 :
      */
     if (liElementMenu && liElementMenu.contains(e.target)) return;
-    window.location.assign(`/add-edit-post.html?id=${postItem.id}`);
+    window.location.assign(`/post-detail.html?id=${postItem.id}`);
   });
 
   const editButton = liElement.querySelector('[data-id=edit]');
