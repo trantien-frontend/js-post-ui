@@ -20,15 +20,29 @@ function createPostItemInPostList(postItem) {
   setTextContent(liElement, '[data-id="timeSpan"]', ` - ${dayjs(postItem.createdAt).fromNow()}`);
 
   const liElementThumbnail = liElement.querySelector('[data-id="thumbnail"]');
+
   if (liElementThumbnail) {
     liElementThumbnail.src = postItem.imageUrl;
     liElementThumbnail.addEventListener('error', () => {
       liElementThumbnail.src = 'https://picsum.photos/id/14/1368/400';
     });
   }
+  const liElementMenu = liElement.querySelector('[data-id="menu"]');
 
-  liElement.firstElementChild.firstElementChild.addEventListener('click', () => {
+  const cardElement = liElement.firstElementChild;
+  cardElement.addEventListener('click', (e) => {
+    /**
+     * case 1 : stopPropagation
+     * case 2 : closest
+     * case 3 :
+     */
+    if (liElementMenu && liElementMenu.contains(e.target)) return;
     window.location.assign(`/post-detail.html?id=${postItem.id}`);
+  });
+
+  const editButton = liElement.querySelector('[data-id=edit]');
+  editButton.addEventListener('click', () => {
+    window.location.assign(`/add-edit-post.html?id=${postItem.id}`);
   });
 
   return liElement;
@@ -36,7 +50,6 @@ function createPostItemInPostList(postItem) {
 
 export function renderPostList(idPostListElement, postList) {
   const ulElement = document.getElementById(idPostListElement);
-  console.log(postList);
   if (!Array.isArray(postList) || !ulElement) return;
 
   ulElement.textContent = '';

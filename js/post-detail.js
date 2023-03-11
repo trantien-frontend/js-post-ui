@@ -1,21 +1,13 @@
 import postApi from './api/postApi';
-import { setTextContent } from './utils';
+import { registerLightBox, setTextContent } from './utils';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 // relative time day js
 dayjs.extend(relativeTime);
-
-// id="postHeroImage"
-// id="postDetailTitle">
-// id="postDetailAuthor"
-// id="postDetailTimeSpan"
-// id="goToEditPageLink"
-// id="postDetailDescription"
-
 function renderPostDetail(postData) {
-  console.log(postData);
   if (!postData) return;
+
   setTextContent(document, '#postDetailTitle', postData.title);
   setTextContent(document, '#postDetailAuthor', postData.author);
   setTextContent(
@@ -26,7 +18,6 @@ function renderPostDetail(postData) {
   setTextContent(document, '#postDetailDescription', postData.description);
 
   const heroImageElement = document.getElementById('postHeroImage');
-
   if (heroImageElement) {
     heroImageElement.style.backgroundImage = `url(${postData.imageUrl})`;
     heroImageElement.addEventListener('error', () => {
@@ -41,10 +32,15 @@ function renderPostDetail(postData) {
     addEditButton.innerHTML = `<i class="fas fa-edit"> </i> Edit post`;
   }
 }
+
 (async () => {
-  // get post id from url
-  // fetch post detail api
-  // render post detail
+  registerLightBox({
+    idElementModel: 'modal-lightBox',
+    selectorImgModel: '[data-id=lightBoxImg]',
+    selectorButtonPrev: '[data-id="lightBoxPrev"]',
+    selectorButtonNext: '[data-id="lightBoxNext"]',
+  });
+
   try {
     const url = new URLSearchParams(window.location.search);
 
@@ -53,6 +49,7 @@ function renderPostDetail(postData) {
       alert('not params');
       return;
     }
+
     const postData = await postApi.getById(postId);
     renderPostDetail(postData);
   } catch (error) {

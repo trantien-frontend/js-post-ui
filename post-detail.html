@@ -84,7 +84,14 @@
                 quas ducimus aliquid. Praesentium ea aspernatur vero deserunt.
               </p>
 
-              <img class="post-image" src="https://picsum.photos/1368/800" alt="Picsum photos" />
+              <div class="layout-shift">
+                <img
+                  class="post-image"
+                  data-album="lightBox"
+                  src="https://picsum.photos/1368/800"
+                  alt="Picsum photos"
+                />
+              </div>
 
               <p>
                 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Adipisci suscipit
@@ -104,13 +111,40 @@
                 quas ducimus aliquid. Praesentium ea aspernatur vero deserunt.
               </p>
 
-              <img class="post-image" src="https://picsum.photos/1368/1000" alt="Picsum photos" />
+              <div class="layout-shift">
+                <img
+                  class="post-image"
+                  data-album="lightBox"
+                  src="https://picsum.photos/1368/1000"
+                  alt="Picsum photos"
+                />
+              </div>
 
               <p>
                 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Adipisci suscipit
                 inventore hic tenetur, dolor iusto dolorum rem, non error, saepe quia dignissimos
                 quas ducimus aliquid. Praesentium ea aspernatur vero deserunt.
               </p>
+            </div>
+          </div>
+
+          <div id="modal-lightBox" class="modal" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <!-- modal-body -->
+                <div class="modal-body">
+                  <img data-id="lightBoxImg" src="" alt="lightBox" style="width: 100%" />
+                </div>
+                <!-- modal-footer -->
+                <div class="modal-footer">
+                  <button data-id="lightBoxPrev" type="button" class="btn btn-secondary btn-sm">
+                    Prev
+                  </button>
+                  <button data-id="lightBoxNext" type="button" class="btn btn-secondary btn-sm">
+                    Next
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
