@@ -5,6 +5,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 
 // relative time day js
 dayjs.extend(relativeTime);
+
 function renderPostDetail(postData) {
   if (!postData) return;
 

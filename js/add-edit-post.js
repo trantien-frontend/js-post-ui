@@ -1,4 +1,5 @@
 import postApi from './api/postApi';
+import { initPostForm } from './utils';
 /**
  * id="postTitle"
 id="postAuthor"
@@ -19,6 +20,14 @@ function populateSelectedPostForm({ idElementForm, idElementTitle, idElementAuth
           description: '',
           imageUrl: '',
         };
+
+    initPostForm({
+      idElementForm: 'postForm',
+      defaultValue: defaultParams,
+      onSubmit: async (value) => {
+        // await postApi.update(value);
+      },
+    });
   } catch (error) {
     console.log('error: ', error);
   }
