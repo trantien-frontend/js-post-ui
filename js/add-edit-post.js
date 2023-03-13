@@ -1,11 +1,21 @@
 import postApi from './api/postApi';
-import { initPostForm } from './utils';
-/**
- * id="postTitle"
-id="postAuthor"
-id="postChangeImage"
- */
-function populateSelectedPostForm({ idElementForm, idElementTitle, idElementAuthor, idEle }) {}
+import { initPostForm, toast } from './utils';
+
+async function handelPostFormSubmit(formValues) {
+  try {
+    const currentData = formValues.id
+      ? await postApi.update(formValues)
+      : await postApi.add(formValues);
+
+    toast.success('Save post Successfully!');
+
+    setTimeout(() => {
+      window.location.assign(`/post-detail.html?id=${currentData.id}`);
+    }, 3000);
+  } catch (erorr) {
+    toast.erorr(`Error: ${erorr.message}`);
+  }
+}
 
 (async () => {
   try {
@@ -24,9 +34,7 @@ function populateSelectedPostForm({ idElementForm, idElementTitle, idElementAuth
     initPostForm({
       idElementForm: 'postForm',
       defaultValue: defaultParams,
-      onSubmit: async (value) => {
-        // await postApi.update(value);
-      },
+      onSubmit: (formValues) => handelPostFormSubmit(formValues),
     });
   } catch (error) {
     console.log('error: ', error);

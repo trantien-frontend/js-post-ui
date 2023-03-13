@@ -100,11 +100,6 @@
               </div>
 
               <div class="form-group">
-                <input name="imageUrl" type="hidden" class="form-control" id="postImageUrl" />
-                <div class="invalid-feedback">Please enter author of this post!</div>
-              </div>
-
-              <div class="form-group">
                 <label for="postDescription">Description</label>
                 <textarea
                   name="description"
@@ -114,7 +109,36 @@
                 ></textarea>
               </div>
 
-              <div class="form-group">
+              <div class="mb-3">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="imageSource"
+                    id="imageSourcePicsum"
+                    value="picsum"
+                    checked
+                  />
+                  <label class="form-check-label" for="imageSourcePicsum">
+                    Random Image using picsum.photos
+                  </label>
+                </div>
+
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="imageSource"
+                    id="imageSourceUpload"
+                    value="upload"
+                  />
+                  <label class="form-check-label" for="imageSourceUpload">
+                    Upload image from computer
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group" data-id="imageSource" data-source="picsum">
                 <label for="postChangeImage">Image</label>
                 <small id="passwordHelpBlock" class="form-text text-muted">
                   We&apos;re using
@@ -125,8 +149,22 @@
                 </button>
               </div>
 
+              <div class="form-group mt-3" data-id="imageSource" data-source="upload">
+                <div class="input-group mb-3">
+                  <input name="image" type="file" class="form-control" id="uploadImage" />
+                  <label class="input-group-text" for="uploadImage">Upload</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <input name="imageUrl" type="text" class="form-control" id="postImageUrl" />
+                <div class="invalid-feedback">Please enter author of this post!</div>
+              </div>
+
               <div class="text-center">
-                <button class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save</button>
+                <button data-id="submit" class="btn btn-primary">
+                  <i class="fas fa-save mr-1"></i> Save
+                </button>
               </div>
             </form>
           </div>

@@ -1,4 +1,4 @@
-import { setFiledValue, setImageUrl, setTextContent } from './common';
+import { randomNumber, setFiledValue, setImageUrl, setTextContent } from './common';
 import * as yup from 'yup';
 
 function setValueInputForm(formElement, value) {
@@ -21,6 +21,7 @@ function getFormsValues(formElement) {
 
   return formValues;
 }
+
 function getPostSchema() {
   return yup.object().shape({
     title: yup.string().required('please enter title'),
@@ -31,21 +32,10 @@ function getPostSchema() {
         return value.split(' ').filter((x) => !!x && x.length > 2).length >= 2;
       }),
     description: yup.string(),
+    imageUrl: yup.string().required('Please change image'),
   });
 }
 
-// function getTitleError(formElement) {
-//   const inputTitle = formElement.querySelector('[name="title"]');
-//   if (!inputTitle) return;
-
-//   //   requied
-//   if (inputTitle.validity.valueMissing) return 'case requied';
-//   // has 3 words and least word has 3 character
-//   if (inputTitle.value.split(' ').filter((x) => !!x && x.length > 2).length < 2)
-//     return 'case words';
-
-//   return '';
-// }
 function setFieldError(form, name, errorMessage) {
   const inputField = form.querySelector(`[name="${name}"]`);
   if (inputField) {
@@ -75,13 +65,14 @@ async function validatePostForm(formElement, formValues) {
 
   try {
     // reset form
-    const fieldList = ['title', 'author'];
+    const fieldList = ['title', 'author', 'imageUrl'];
     fieldList.forEach((field) => setFieldError(formElement, field, ''));
 
     const schema = getPostSchema();
     await schema.validate(formValues, { abortEarly: false });
   } catch (error) {
     const errorLog = {};
+
     if (error.name === 'ValidationError' || Array.isArray(error.inner)) {
       for (const validationError of error.inner) {
         const name = validationError.path;
@@ -93,26 +84,89 @@ async function validatePostForm(formElement, formValues) {
       }
     }
   }
-
+  // valid form
   const isValid = formElement.checkValidity();
   if (!isValid) formElement.classList.add('was-validated');
   return isValid;
 }
+
+function showLoadingSubmit(form) {
+  const buttonSubmit = form.querySelector('[data-id="submit"]');
+  if (buttonSubmit) {
+    buttonSubmit.disabled = true;
+    buttonSubmit.textContent = 'Saving...';
+  }
+}
+
+function hideLoadingSubmit(form) {
+  const buttonSubmit = form.querySelector('[data-id="submit"]');
+  if (buttonSubmit) {
+    buttonSubmit.disabled = false;
+    buttonSubmit.textContent = 'Save';
+  }
+}
+
+function initRamdomImage(form) {
+  const buttonRandomImage = document.getElementById('postChangeImage');
+  if (!buttonRandomImage) return;
+
+  buttonRandomImage.addEventListener('click', () => {
+    // random id image
+    const randomIdImage = randomNumber(1000);
+    // config url
+    const imageUrl = `https://picsum.photos/id/${randomIdImage}/1368/400`;
+    // set image
+    setFiledValue(form, '#postImageUrl', imageUrl);
+    setImageUrl(document, '#postHeroImage', imageUrl);
+  });
+}
+function renderImageSource(form, selectedValue) {
+  const controlList = form.querySelectorAll('[data-id="imageSource"]');
+  if (!controlList) return;
+
+  [...controlList].forEach((control) => {
+    control.hidden = !control.dataset.source !== selectedValue;
+  });
+}
+function initRadioImageSource(form) {
+  const radioList = form.querySelectorAll('[name="imageSource"]');
+  if (!radioList) return;
+
+  [...radioList].forEach((radio) => {
+    radio.addEventListener('change', () => renderImageSource(form, radio.value));
+  });
+}
+let isSubmiting = false;
 
 export function initPostForm({ idElementForm, defaultValue, onSubmit }) {
   const form = document.getElementById(idElementForm);
   if (!form) return;
 
   setValueInputForm(form, defaultValue);
+  initRamdomImage(form);
+  initRadioImageSource(form);
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
+    showLoadingSubmit(form);
+
+    if (isSubmiting) {
+      console.log('not clicked');
+      return;
+    }
+
+    isSubmiting = true;
+
     const formValues = getFormsValues(form);
+    formValues.id = defaultValue.id;
 
-    if (!validatePostForm(form, formValues)) return;
+    console.log(formValues);
 
-    console.log('submited form');
+    const isValidatePostForm = await validatePostForm(form, formValues);
+    if (isValidatePostForm) await onSubmit?.(formValues);
+
+    hideLoadingSubmit(form);
+    isSubmiting = false;
   });
-  //   onSubmit(defaultValue);
 }

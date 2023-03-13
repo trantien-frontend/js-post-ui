@@ -17,7 +17,7 @@ export const postApi = {
   },
 
   update(data) {
-    const url = `/posts${data.id}`;
+    const url = `/posts/${data.id}`;
     return axiosClient.patch(url, data);
   },
 
