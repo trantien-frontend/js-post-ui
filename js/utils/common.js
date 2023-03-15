@@ -16,7 +16,6 @@ export function setImageUrl(parentElement, selectorElement, urlImage) {
   if (!parentElement) return;
 
   const element = parentElement.querySelector(selectorElement);
-  console.log(urlImage);
   if (element) element.style.backgroundImage = `url(${urlImage})`;
 }
 

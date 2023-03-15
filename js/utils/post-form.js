@@ -1,6 +1,11 @@
 import { randomNumber, setFiledValue, setImageUrl, setTextContent } from './common';
 import * as yup from 'yup';
 
+const ImageSource = {
+  PICSUM: 'picsum',
+  UPLOAD: 'upload',
+};
+
 function setValueInputForm(formElement, value) {
   if (!value) return;
 
@@ -19,6 +24,8 @@ function getFormsValues(formElement) {
     formValues[key] = value;
   }
 
+  console.log('New FormData: ', formValues);
+
   return formValues;
 }
 
@@ -32,7 +39,14 @@ function getPostSchema() {
         return value.split(' ').filter((x) => !!x && x.length > 2).length >= 2;
       }),
     description: yup.string(),
-    imageUrl: yup.string().required('Please change image'),
+    imageSource: yup
+      .string()
+      .oneOf([ImageSource.PICSUM, ImageSource.UPLOAD], 'Please Select Image Source'),
+    imageUrl: yup.string().required('Please Random ImageBg').url('Please enter valid URL'),
+    // imageUrl: yup.string().when('imageSource', {
+    //   is: ImageSource.PICSUM,
+    //   then: yup.string().required('Please Random ImageBg').url('Please enter valid URL'),
+    // }),
   });
 }
 
@@ -47,22 +61,6 @@ function setFieldError(form, name, errorMessage) {
 async function validatePostForm(formElement, formValues) {
   if (!formElement) return;
 
-  // const listErrorMess = {
-  //   title: getTitleError(formElement),
-  // };
-
-  // for (const errorMess in listErrorMess) {
-  //   const inputTitleElement = formElement.querySelector(`[name=${errorMess}]`);
-  //   if (inputTitleElement) {
-  //     inputTitleElement.setCustomValidity(listErrorMess[errorMess]);
-  //     setTextContent(
-  //       inputTitleElement.parentElement,
-  //       '.invalid-feedback',
-  //       listErrorMess[errorMess]
-  //     );
-  //   }
-  // }
-
   try {
     // reset form
     const fieldList = ['title', 'author', 'imageUrl'];
@@ -72,6 +70,8 @@ async function validatePostForm(formElement, formValues) {
     await schema.validate(formValues, { abortEarly: false });
   } catch (error) {
     const errorLog = {};
+
+    console.log('Error Inner: ', error.inner);
 
     if (error.name === 'ValidationError' || Array.isArray(error.inner)) {
       for (const validationError of error.inner) {
@@ -125,7 +125,7 @@ function renderImageSource(form, selectedValue) {
   if (!controlList) return;
 
   [...controlList].forEach((control) => {
-    control.hidden = !control.dataset.source !== selectedValue;
+    control.hidden = control.dataset.source !== selectedValue;
   });
 }
 function initRadioImageSource(form) {
@@ -136,6 +136,20 @@ function initRadioImageSource(form) {
     radio.addEventListener('change', () => renderImageSource(form, radio.value));
   });
 }
+
+function initUploadImage(form) {
+  const inputUpload = form.querySelector('[name="image"]');
+  if (!inputUpload) return;
+
+  inputUpload.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setImageUrl(document, '#postHeroImage', imageUrl);
+    }
+  });
+}
+
 let isSubmiting = false;
 
 export function initPostForm({ idElementForm, defaultValue, onSubmit }) {
@@ -145,6 +159,7 @@ export function initPostForm({ idElementForm, defaultValue, onSubmit }) {
   setValueInputForm(form, defaultValue);
   initRamdomImage(form);
   initRadioImageSource(form);
+  initUploadImage(form);
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -160,8 +175,6 @@ export function initPostForm({ idElementForm, defaultValue, onSubmit }) {
 
     const formValues = getFormsValues(form);
     formValues.id = defaultValue.id;
-
-    console.log(formValues);
 
     const isValidatePostForm = await validatePostForm(form, formValues);
     if (isValidatePostForm) await onSubmit?.(formValues);

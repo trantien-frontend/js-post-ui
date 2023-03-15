@@ -140,26 +140,34 @@
 
               <div class="form-group" data-id="imageSource" data-source="picsum">
                 <label for="postChangeImage">Image</label>
+
                 <small id="passwordHelpBlock" class="form-text text-muted">
                   We&apos;re using
                   <a href="https://picsum.photos">Picsum service</a> to get a random image.
                 </small>
+
                 <button type="button" id="postChangeImage" class="btn btn-dark">
                   Change post image
                 </button>
+
+                <input name="imageUrl" type="text" class="form-control" id="postImageUrl" />
+                <div class="invalid-feedback">Please enter author of this post!</div>
               </div>
 
-              <div class="form-group mt-3" data-id="imageSource" data-source="upload">
+              <div hidden class="form-group mt-3" data-id="imageSource" data-source="upload">
                 <div class="input-group mb-3">
-                  <input name="image" type="file" class="form-control" id="uploadImage" />
+                  <input
+                    accept="image/*"
+                    name="image"
+                    type="file"
+                    class="form-control"
+                    id="uploadImage"
+                  />
                   <label class="input-group-text" for="uploadImage">Upload</label>
                 </div>
               </div>
 
-              <div class="form-group">
-                <input name="imageUrl" type="text" class="form-control" id="postImageUrl" />
-                <div class="invalid-feedback">Please enter author of this post!</div>
-              </div>
+              <div class="form-group"></div>
 
               <div class="text-center">
                 <button data-id="submit" class="btn btn-primary">
