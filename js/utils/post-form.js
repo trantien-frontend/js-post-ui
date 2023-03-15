@@ -42,11 +42,18 @@ function getPostSchema() {
     imageSource: yup
       .string()
       .oneOf([ImageSource.PICSUM, ImageSource.UPLOAD], 'Please Select Image Source'),
-    imageUrl: yup.string().required('Please Random ImageBg').url('Please enter valid URL'),
-    // imageUrl: yup.string().when('imageSource', {
-    //   is: ImageSource.PICSUM,
-    //   then: yup.string().required('Please Random ImageBg').url('Please enter valid URL'),
-    // }),
+    // imageUrl: yup.string().required('Please Random ImageBg').url('Please enter valid URL'),
+    imageUrl: yup.string().when('imageSource', {
+      is: ImageSource.PICSUM,
+      then: (schema) => schema.required('Please Random BG').url('Please enter valid URL'),
+    }),
+    image: yup.mixed().when('imageSource', {
+      is: ImageSource.UPLOAD,
+      then: (schema) =>
+        schema.test('Check-File', 'Please upload image file', (value) => {
+          return value?.name;
+        }),
+    }),
   });
 }
 
@@ -63,7 +70,7 @@ async function validatePostForm(formElement, formValues) {
 
   try {
     // reset form
-    const fieldList = ['title', 'author', 'imageUrl'];
+    const fieldList = ['title', 'author', 'imageUrl', 'image'];
     fieldList.forEach((field) => setFieldError(formElement, field, ''));
 
     const schema = getPostSchema();

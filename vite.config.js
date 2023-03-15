@@ -6,8 +6,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        nested: resolve(__dirname, 'post-detail.html'),
-        nested: resolve(__dirname, 'add-edit-post.html'),
+        postDetail: resolve(__dirname, 'post-detail.html'),
+        addEditPost: resolve(__dirname, 'add-edit-post.html'),
       },
     },
   },
