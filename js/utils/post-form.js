@@ -1,10 +1,6 @@
 import { randomNumber, setFiledValue, setImageUrl, setTextContent } from './common';
 import * as yup from 'yup';
-
-const ImageSource = {
-  PICSUM: 'picsum',
-  UPLOAD: 'upload',
-};
+import { ImageSource } from '../Constant/constant.js';
 
 function setValueInputForm(formElement, value) {
   if (!value) return;
@@ -24,35 +20,43 @@ function getFormsValues(formElement) {
     formValues[key] = value;
   }
 
-  console.log('New FormData: ', formValues);
-
   return formValues;
 }
 
 function getPostSchema() {
   return yup.object().shape({
     title: yup.string().required('please enter title'),
+
     author: yup
       .string()
       .required('please enter author')
       .test('at-least-to-words', 'at least to words', (value) => {
         return value.split(' ').filter((x) => !!x && x.length > 2).length >= 2;
       }),
+
     description: yup.string(),
+
     imageSource: yup
       .string()
       .oneOf([ImageSource.PICSUM, ImageSource.UPLOAD], 'Please Select Image Source'),
-    // imageUrl: yup.string().required('Please Random ImageBg').url('Please enter valid URL'),
+
     imageUrl: yup.string().when('imageSource', {
       is: ImageSource.PICSUM,
       then: (schema) => schema.required('Please Random BG').url('Please enter valid URL'),
     }),
+
     image: yup.mixed().when('imageSource', {
       is: ImageSource.UPLOAD,
       then: (schema) =>
-        schema.test('Check-File', 'Please upload image file', (value) => {
-          return value?.name;
-        }),
+        schema
+          .test('Check-File', 'Please upload image file', (file) => {
+            console.log(file.name);
+            return file?.name;
+          })
+          .test('max-0.5mb', 'Please upload file image max 0.5mb', (file) => {
+            const MAX_SIZE = 0.5 * 1024 * 1024;
+            return file.size <= MAX_SIZE;
+          }),
     }),
   });
 }
@@ -74,11 +78,10 @@ async function validatePostForm(formElement, formValues) {
     fieldList.forEach((field) => setFieldError(formElement, field, ''));
 
     const schema = getPostSchema();
+
     await schema.validate(formValues, { abortEarly: false });
   } catch (error) {
     const errorLog = {};
-
-    console.log('Error Inner: ', error.inner);
 
     if (error.name === 'ValidationError' || Array.isArray(error.inner)) {
       for (const validationError of error.inner) {
@@ -91,10 +94,27 @@ async function validatePostForm(formElement, formValues) {
       }
     }
   }
+
   // valid form
   const isValid = formElement.checkValidity();
   if (!isValid) formElement.classList.add('was-validated');
   return isValid;
+}
+
+async function validateFormField(formElement, formValues, name) {
+  try {
+    setFieldError(formElement, name, '');
+
+    const schema = getPostSchema();
+    await schema.validateAt(name, formValues);
+  } catch (erorr) {
+    console.log(erorr.message);
+    setFieldError(formElement, name, erorr.message);
+    const inputField = formElement.querySelector(`[name=${name}]`);
+    if (inputField && !inputField.checkValidity()) {
+      inputField.parentElement.classList.add('was-validated');
+    }
+  }
 }
 
 function showLoadingSubmit(form) {
@@ -153,6 +173,19 @@ function initUploadImage(form) {
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setImageUrl(document, '#postHeroImage', imageUrl);
+
+      validateFormField(form, { imageSource: ImageSource.UPLOAD, image: file }, 'image');
+    }
+  });
+}
+
+function initChangeField(formElement) {
+  ['title', 'author'].forEach((name) => {
+    const inputField = formElement.querySelector(`[name=${[name]}]`);
+    if (inputField) {
+      inputField.addEventListener('input', (e) => {
+        validateFormField(formElement, { [name]: e.target.value }, name);
+      });
     }
   });
 }
@@ -167,6 +200,7 @@ export function initPostForm({ idElementForm, defaultValue, onSubmit }) {
   initRamdomImage(form);
   initRadioImageSource(form);
   initUploadImage(form);
+  initChangeField(form);
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
