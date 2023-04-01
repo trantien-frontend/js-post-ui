@@ -35,6 +35,7 @@ export function initPagination({ idElementPagination, defaultParam, onChange }) 
   }
 
   const next = ulPagination.lastElementChild?.lastElementChild;
+
   if (next) {
     next.addEventListener('click', (e) => {
       e.preventDefault();

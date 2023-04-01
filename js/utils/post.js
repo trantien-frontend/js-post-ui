@@ -41,9 +41,22 @@ function createPostItemInPostList(postItem) {
   });
 
   const editButton = liElement.querySelector('[data-id=edit]');
-  editButton.addEventListener('click', () => {
-    window.location.assign(`/add-edit-post.html?id=${postItem.id}`);
-  });
+  if (editButton) {
+    editButton.addEventListener('click', () => {
+      window.location.assign(`/add-edit-post.html?id=${postItem.id}`);
+    });
+  }
+
+  const removeButton = liElement.querySelector('[data-id=remove]');
+  if (removeButton) {
+    removeButton.addEventListener('click', () => {
+      const customEvent = new CustomEvent('post-remove', {
+        bubbles: true,
+        detail: postItem,
+      });
+      removeButton.dispatchEvent(customEvent);
+    });
+  } 
 
   return liElement;
 }
